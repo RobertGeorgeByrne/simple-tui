@@ -18,6 +18,9 @@ int main() {
     return 0;
 }
 
-extern int calc(int a){
-	return a * a * a;
+void 
+printbuffer(char *buffer, size_t size)
+{
+    write(STDOUT_FILENO, buffer, size);
 }
+

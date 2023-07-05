@@ -1,6 +1,6 @@
 all: run
 
 run:
-	gcc ./tst.c -o ./a.out
+	gcc ./simpletui.c -o ./a.out
 	./a.out
 

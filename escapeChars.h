@@ -1,6 +1,11 @@
 
 #define ESC "\033["
 
+/* 
+ * Alternate buffer used for drawing so the origional can
+ * be restored after program ends. Not defined in offical ANSI 
+ * spec but supported on all xterm derivitives 
+*/
 #define ALTBUFFER          ESC "?1049h"
 #define ORIGBUFFER         ESC "?1049l"
 
