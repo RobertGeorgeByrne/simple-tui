@@ -5,5 +5,16 @@ typedef struct {
     char* chars;
 } TuiWindow ;
 
-TuiWindow tuiinit();
-int tuicleanup(TuiWindow*);
+/*
+ * *** Need to be called again if window is resised ***
+ *
+ * initialises tuiwindow struct and 
+ * sets terminal to alternate buff
+ */
+extern TuiWindow tuiinit();
+
+/*
+ * frees internal pointers and
+ * resores terminal to origional buffer
+ */
+extern int tuicleanup(TuiWindow*);

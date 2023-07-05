@@ -11,7 +11,6 @@
 #define BUFFER_ELEMENT(B, ROW, COL) (B).chars[ROW * (B).c + COL] /* */
 
 
-
 void renderwindow(TuiWindow*);
 static void getwsize(TuiWindow *w);
 
@@ -30,6 +29,9 @@ int main() {
 
     printf("%c\n", BUFFER_ELEMENT(*bp, b.r, b.c));
 
+    TuiWindow tst = tuiinit();
+    getchar();
+    write(STDOUT_FILENO, ORIGBUFFER, sizeof(ORIGBUFFER));
     free(b.chars);
     return 0;
 }
@@ -53,16 +55,33 @@ getwsize(TuiWindow *w){
 int
 tuicleanup(TuiWindow *w){
     free(w->chars);
-    printf(ORIGBUFFER);
+    write(STDOUT_FILENO, ORIGBUFFER, sizeof(ORIGBUFFER));
     return 0;
 }
 
 /* If terminal changes size need to get a new TuiWindow */
 TuiWindow
 tuiinit(){
+    write(STDOUT_FILENO, ALTBUFFER, sizeof(ALTBUFFER));
     TuiWindow w;
     getwsize(&w);
     w.size = w.r * w.c * sizeof(char);
     w.chars = (char*)malloc(w.size);
     return w;
+}
+
+void
+setrow(TuiWindow *w, char *chars, unsigned short r)// dont pass chars[] that is less than length w->c
+{
+    for (unsigned short i = 0; i < w->c; i++)
+        w->chars[r * w->c + i] = chars[i]; //overflow of chars[i]?????????
+}
+
+
+void
+setcol(TuiWindow *w, char *chars, unsigned short c)// dont pass chars[] that is less than length w->r
+{
+
+    for (unsigned short i = 0; i < w->r; i++)
+        w->chars[r * w->c + i] = chars[i]; //overflow of chars[i]?????????
 }
