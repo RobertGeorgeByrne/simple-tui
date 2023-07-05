@@ -1,6 +1,7 @@
-all: run
+all: com run
 
 run:
-	gcc ./simpletui.c -o ./a.out
-	./a.out
+	./simpletui
 
+com:
+	gcc -Wall -Wextra simpletui.c -o simpletui
