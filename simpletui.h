@@ -1,8 +1,11 @@
 typedef struct {
+    unsigned long decorator;
+    char c;
+} cell;
+typedef struct {
     unsigned short r;
     unsigned short c;
-    unsigned short size;  /* size of memory allocated for bytes */
-    char* chars;
+    cell* cells;
 } TuiWindow ;
 
 /*
@@ -11,10 +14,19 @@ typedef struct {
  * initialises tuiwindow struct and 
  * sets terminal to alternate buff
  */
-extern TuiWindow tuiinit();
+extern void tuiinit(TuiWindow*);
 
 /*
  * frees internal pointers and
  * resores terminal to origional buffer
  */
 extern int tuicleanup(TuiWindow*);
+
+
+/*
+ * sends the character array to output
+ */
+extern void renderwindow(TuiWindow*);
+
+extern void setrow(TuiWindow*, char*, unsigned short);
+extern void setcol(TuiWindow*, char*, unsigned short);

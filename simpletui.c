@@ -11,28 +11,23 @@
 #define BUFFER_ELEMENT(B, ROW, COL) (B).chars[ROW * (B).c + COL] /* */
 
 
-void renderwindow(TuiWindow*);
 static void getwsize(TuiWindow *w);
 
 int main() {
 
-    TuiWindow b;
-    
-    getwsize(&b);
-    printf("%i, %i\n", b.r, b.c);
+//    printf("%ld, %ld", sizeof(unsigned long), sizeof(FG_BLACK BG_BRIGHT_WHITE) );
+    TuiWindow w = { 0 };
+    tuiinit(&w);
+    char c[256];
 
-    b.size = 2 * b.r * b.c * sizeof(char);
-    b.chars = (char*)malloc(b.size);
-    b.chars[b.r*b.c + b.c] = 'x';
-
-    TuiWindow *bp = &b;
-
-    printf("%c\n", BUFFER_ELEMENT(*bp, b.r, b.c));
-
-    TuiWindow tst = tuiinit();
+    for (int i = 0; i < 256; i++) {
+        c[i] = 'X';
+    }
+    setrow(&w, c, w.r -1);
+    setcol(&w, c, w.c -1);
+    renderwindow(&w);
     getchar();
-    write(STDOUT_FILENO, ORIGBUFFER, sizeof(ORIGBUFFER));
-    free(b.chars);
+    tuicleanup(&w);
     return 0;
 }
 
@@ -40,7 +35,7 @@ int main() {
 void 
 renderwindow(TuiWindow *w)
 {
-    write(STDOUT_FILENO, w->chars, w->r * w->c);
+    write(STDOUT_FILENO, w->cells, w->r * w->c * sizeof(cell));
 }
 
 void
@@ -54,34 +49,35 @@ getwsize(TuiWindow *w){
 
 int
 tuicleanup(TuiWindow *w){
-    free(w->chars);
+    free(w->cells);
     write(STDOUT_FILENO, ORIGBUFFER, sizeof(ORIGBUFFER));
     return 0;
 }
 
 /* If terminal changes size need to get a new TuiWindow */
-TuiWindow
-tuiinit(){
+void
+tuiinit(TuiWindow *w){
     write(STDOUT_FILENO, ALTBUFFER, sizeof(ALTBUFFER));
-    TuiWindow w;
-    getwsize(&w);
-    w.size = w.r * w.c * sizeof(char);
-    w.chars = (char*)malloc(w.size);
-    return w;
+    getwsize(w);
+    w->cells = (cell*)calloc(w->r * w->c, sizeof(cell));
+    for (int i=0; i < w->r * w->c; i++){
+        w->cells[i].c = ' ';
+    }
 }
 
 void
-setrow(TuiWindow *w, char *chars, unsigned short r)// dont pass chars[] that is less than length w->c
+setrow(TuiWindow *w, char *chars, unsigned short r)
 {
     for (unsigned short i = 0; i < w->c; i++)
-        w->chars[r * w->c + i] = chars[i]; //overflow of chars[i]?????????
+        (w->cells)[r * w->c + i].c = chars[i];
 }
 
-
 void
-setcol(TuiWindow *w, char *chars, unsigned short c)// dont pass chars[] that is less than length w->r
+setcol(TuiWindow *w, char *chars, unsigned short c)
 {
-
-    for (unsigned short i = 0; i < w->r; i++)
-        w->chars[r * w->c + i] = chars[i]; //overflow of chars[i]?????????
+    //for (int i =0; i < 5; i++)
+    //    w->cells[c].decorator += 0;//(BG_BRIGHT_WHITE)[0] ;
+    for (unsigned short i = 0; i < w->r; i++){
+        (w->cells)[i * w->c + c].c = chars[i]; 
+    }
 }
